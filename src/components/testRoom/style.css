@@ -1,0 +1,99 @@
+.bodyContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.roomContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.hostingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 50vw;
+
+}
+.joinContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 50vw;
+
+}
+.input {
+    width: 50%;
+    height: 5vh;
+    margin: 1vh;
+    border-radius: 5px;
+    border: 1px solid black;
+    text-align: center;
+    font-size: 1.5em;
+}
+.button {
+    width: 50%;
+    height: 5vh;
+    margin: 1vh;
+    border-radius: 5px;
+    border: 1px solid black;
+    text-align: center;
+    font-size: 1.5em;
+    background-color: #4CAF50;
+    color: white;
+}
+.button:hover {
+    background-color: #3e8e41;
+}
+
+.breakLine {
+    width: 100%;
+    height: 1px;
+    background-color: black;
+    margin: 1vh;
+}
+
+.roomInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+}
+.roomNumber {
+    font-size: 2em;
+    margin: 1vh;
+}
+.playersList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 1vh;
+    width: 100%;
+}
+.player {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin: 1vh;
+    width: 100%;
+}
+.username {
+    font-size: 1.5em;
+}
+.role {
+    font-size: 1.5em;
+}
+.playerContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+}

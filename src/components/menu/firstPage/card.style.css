@@ -1,0 +1,95 @@
+.container {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    backdrop-filter: blur(5px);
+    z-index: 40;
+}
+.cardCard {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #F9931E;
+    border-radius: 5px;
+    padding: 1rem 3rem;
+    gap: 1rem;
+    z-index: 99;
+}
+.cardTitle {
+    font-family: "Lalezar";
+    font-size: 2em;
+    color: #1e1e1e;
+    margin-bottom: 0.5rem;
+}
+input {
+    width: 100%;
+    height: 5vh;
+    border-radius: 5px;
+    border: none;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+input:focus {
+    outline: none;
+}
+.cardSettings {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 5vh;
+    border-radius: 5px;
+    font-size: 1.2em;
+    background-color: #1e1e1e;
+    color: #F9931E;
+    font-weight: bold;
+}
+.cardButtonsContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+
+.cardButtonsContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+.cancelButton {
+    font-size: 1.2em;
+    padding: 0.5rem 1rem;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #e44b43;
+    border-radius: 5px;
+}
+.confirmButton {
+    font-size: 1.2em;
+    padding: 0.5rem 1rem;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: #37d434;
+    border: 2px solid #37d434;
+    border-radius: 5px;
+    color: #1e1e1e;
+}
