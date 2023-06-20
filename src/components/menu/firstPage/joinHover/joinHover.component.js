@@ -17,6 +17,8 @@ export class JoinHover extends React.Component {
             isAdmin: false,
             gameInProgress: false,
             deleteTimeout: null,
+            isConfirmed: false,
+            joinCountdown: 3,
         }
         this.interface = this.interface.bind(this);
     }
@@ -27,12 +29,6 @@ export class JoinHover extends React.Component {
         })
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if ((prevState.players !== this.state.players) || (prevState.roomNumber !== this.state.roomNumber)) {
-            this.fetchPlayerList();
-        }
-    }
-
     render() {
         return (
             <>
@@ -40,25 +36,33 @@ export class JoinHover extends React.Component {
                     <div class="cardCard">
                         <div class="cardTitle">Join a game</div>
                         <input type="text"
-                                id="username"
-                                class="cardText"
-                                placeholder="username"
-                                value={this.state.username}
-                                onChange={event => this.setState({ username: event.target.value })}
-                            >
-                            </input>
-                            <input type="text"
-                                id="roomNumber"
-                                class="car"
-                                placeholder="room number"
-                                value={this.state.roomNumber}
-                                onChange={event => this.setState({ roomNumber: event.target.value })}>
-                            </input>
+                            id="username"
+                            class="cardText"
+                            placeholder="username"
+                            value={this.state.username}
+                            onChange={event => this.setState({ username: event.target.value })}
+                        >
+                        </input>
+                        <input type="text"
+                            id="roomNumber"
+                            class="car"
+                            placeholder="room number"
+                            value={this.state.roomNumber}
+                            onChange={event => this.setState({ roomNumber: event.target.value })}>
+                        </input>
                         <div class="cardButtonsContainer">
-                            <div class="cancelButton" onClick={this.props.onJoinClose}>
+                        <div class="cancelButton" onClick={this.props.onJoinClose}>
                                 Cancel
                             </div>
-                            <Link to='/lobby' state={{from: 'ciao'}} class="confirmButton" id="joinBtn" onClick={this.interface}>
+                            {this.state.isConfirmed == true ?
+                                <div class="confirmButton" id="joinRoom">
+                                    {this.state.joinCountdown}
+                                </div> :
+                                <div class="confirmButton" id="joinRoom" onClick={this.interface} >
+                                    Join
+                                </div>}
+
+                            <Link to={'/lobby'} state={{ prova: this.state.roomNumber }} style={{ display: "none" }} id="createRoomPivot" onClick={this.interface}>
                                 Host
                             </Link>
                         </div>
@@ -73,7 +77,7 @@ export class JoinHover extends React.Component {
 
         if (id == "createRoom") {
             this.createRoom();
-        } else if (id == "joinBtn") {
+        } else if (id == "joinRoom") {
             this.joinRoom();
         }
 
@@ -87,47 +91,40 @@ export class JoinHover extends React.Component {
         }
     }
 
-    adminData() {
-        return {
-            username: this.state.admin.username,
-            role: "null",
-            admin: true,
-        }
-    }
-
-    createRoom() {
-        const db = this.state.db;
-        const data = this.adminData();
-        // the room number is a 4 digit number
-        const roomNumber = Math.floor(Math.random() * 9000) + 1000;
-        set(ref(db, 'rooms/' + roomNumber + '/players/' + data.username), data);
-        this.setState({ roomNumber });
-        this.isInRoom = true;
-        this.isAdmin = true;
-
-        // remove the room after 5 minutes
-        if (!this.state.gameInProgress) {
-            const deleteTimeout = setTimeout(() => {
-                this.deleteRoom();
-            }, 900000);
-            this.setState({ deleteTimeout });
-        }
-        onDisconnect(ref(db, 'rooms/' + roomNumber + '/players/' + data.username)).remove();
-    }
-
     joinRoom() {
         const db = this.state.db;
         const data = this.playerData();
         const roomNumber = this.state.roomNumber;
         set(ref(db, 'rooms/' + roomNumber + '/players/' + data.username), data);
         this.isInRoom = true;
-        
+
 
         if (this.state.gameInProgress && this.state.deleteTimeout) {
             clearTimeout(this.state.deleteTimeout);
             this.setState({ deleteTimeout: null });
         }
         onDisconnect(ref(db, 'rooms/' + roomNumber + '/players/' + data.username)).remove();
+
+        this.setState({ isConfirmed: true });
+        this.countdown();
+        setTimeout(() => {
+            this.handleRedirect();
+        }, 3000);
+
+    }
+
+    handleRedirect() {
+        const createRoomPivot = document.getElementById("createRoomPivot");
+        createRoomPivot.click();
+    }
+
+    countdown() {
+        const countdown = setInterval(() => {
+            this.setState({ joinCountdown: this.state.joinCountdown - 1 });
+        }, 1000);
+        setTimeout(() => {
+            clearInterval(countdown);
+        }, 3000);
     }
 
     deleteRoom() {
@@ -135,39 +132,4 @@ export class JoinHover extends React.Component {
         remove(ref(db, 'rooms/' + roomNumber));
     }
 
-    fetchPlayerList() {
-        const { db, roomNumber } = this.state;
-        const playersRef = ref(db, `rooms/${roomNumber}/players`);
-
-        get(playersRef)
-            .then((snapshot) => {
-                if (snapshot.exists()) {
-                    const playersData = snapshot.val();
-                    const players = Object.keys(playersData).map((key) => playersData[key]);
-                    this.setState({ players });
-                } else {
-                    this.setState({ players: [] });
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    }
-
-
-    renderPlayerList() {
-        const { players } = this.state;
-        if (this.isInRoom == true) {
-            return players.map((player) => {
-                return (
-                    <div class="playerContainer">
-                        <div class="player">
-                            <p>{player.username}</p>
-                            <p>{player.role}</p>
-                        </div>
-                    </div>
-                );
-            });
-        }
-    }
 }

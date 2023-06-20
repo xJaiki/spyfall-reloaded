@@ -1,66 +1,58 @@
 import React from "react";
 import StartFirebase from '../../../utils/firebaseConfig/index';
-import { ref, set, get, update, remove, child, onDisconnect } from 'firebase/database';
+import { ref, set, get, update, remove, child, onDisconnect, off, onValue } from 'firebase/database';
 import { useState } from 'react';
 import { useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
+import { useEffect } from "react";
 import './lobby.style.css';
+import { render } from "@testing-library/react";
 
-export class Lobby extends React.Component{
-    constructor(props) {
-        super(props);
-        this.state = {
-            db: null,
-            username: '',
-            players: [],
-            roomNumber: '',
-        }
-    }
 
-    componentDidMount() {
-        this.setState({
-            db: StartFirebase(),
-        })
-    }
+export const Lobby = () => {
+    const location = useLocation();
+    const { prova } = location.state;
+    const [db, setDb] = useState(StartFirebase());
 
-    componentDidUpdate(prevProps, prevState) {
-        if ((prevState.players !== this.state.players) || (prevState.roomNumber !== this.state.roomNumber)) {
-            this.fetchPlayerList();
-        }
-    }
+    const [players, setPlayers] = useState([]);
+    useEffect(() => {
+        const roomReference = "rooms/" + prova + "/players";
+        const roomRef = ref(db, roomReference);
 
-    render() {
-        const { from } = this.props.location.state;
-        return (
-            <>
-                <div class="playerList">
-                    {/* write the state passed from the LINK */}
-                    <h1>
-                        {from}
-                    </h1>
-                </div>
-            </>
-         )
-    }
-
-    fetchPlayerList() {
-        const db = this.state.db;
-        const roomNumber = this.state.roomNumber;
-        const players = [];
-        get(child(ref(db), 'rooms/' + roomNumber + '/players')).then((snapshot) => {
-            if (snapshot.exists()) {
-                snapshot.forEach((childSnapshot) => {
-                    players.push(childSnapshot.val());
-                });
-                this.setState({ players });
+        const handleData = (snapshot) => {
+            const playersData = snapshot.val();
+            if (playersData) {
+                const playersArray = Object.values(playersData);
+                setPlayers(playersArray);
             } else {
-                console.log("No data available");
+                setPlayers([]);
             }
-        }).catch((error) => {
-            console.error(error);
-        });
-    }
+        };
 
-    renderPlayerList() {
-    }
+        // Aggiungi un listener per l'evento "value"
+        onValue(roomRef, handleData);
 
+        // Cleanup: Rimuovi il listener quando il componente viene smontato
+        return () => {
+            off(roomRef, handleData);
+        };
+    }, [db]);
+
+    return (
+        <>
+            {/* write the room ID */}
+            <div class="roomIDContainer">
+                <h1 class="roomID" style={{ color: "white" }}>Room ID: {prova}</h1>
+            </div>
+            <div class="lobbyContainer">
+                <div class="lobbyPlayersContainer">
+                    {players.map((player, index) => (
+                        <div key={index} style={{ color: "white" }} className="playerItem">
+                            {player.username}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </>
+    )
 }
